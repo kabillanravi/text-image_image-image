@@ -34,3 +34,67 @@ Before running the application, ensure you have the following:
    ```bash
    git clone <repository-url>
    cd <repository-directory>
+
+
+## FLOW CHART
+
+[Start]
+   |
+   v
+[Request Received at FastAPI (backend/main.py)]
+   |
+   v
+[Is it a GET /search/text/ request?]
+   | Yes
+   v
+[Query Provided?]
+   | No
+   |----> [Return HTTP 400 Error: "Query text is required"]
+   | Yes
+   v
+[Call get_text_embedding(query) from clip_utils.py]
+   | 
+   v
+[Generate Text Embedding using CLIP]
+   |
+   v
+[Call search_similar_images(embedding) from pinecone_service.py]
+   |
+   v
+[Query Pinecone Index with Embedding]
+   |
+   v
+[Return Matches (ID, Score, URL) to Client]
+   |
+   v
+[End]
+
+[Is it a POST /search/image/ request?]
+   | Yes
+   v
+[File Uploaded?]
+   | No
+   |----> [Implicitly handled by FastAPI]
+   | Yes
+   v
+[Read Image Bytes and Convert to PIL Image]
+   | Success
+   v
+[Call get_image_embedding(image) from clip_utils.py]
+   |
+   v
+[Generate Image Embedding using CLIP]
+   |
+   v
+[Call search_similar_images(embedding) from pinecone_service.py]
+   |
+   v
+[Query Pinecone Index with Embedding]
+   |
+   v
+[Return Matches (ID, Score, URL) to Client]
+   | Failure
+   |----> [Return HTTP 500 Error: "Error processing image"]
+   |
+   v
+[End]
